@@ -310,16 +310,19 @@ if __name__ == "__main__":
         lang = "en"
     elif args['es']:
         lang = "es"
-        
 
+    kws = pd.read_csv('kws.csv', names=['query'])
 
-    if args['<keyword>']:
+    for i, row in kws.iterrows():
+        q = row['query']
+        print(q)
+
         if args['--headless']:
             browser = initBrowser(True)
         else:
             browser = initBrowser()
-        query = args['<keyword>']
-        start_paa = newSearch(browser,query)
+        query = q
+        start_paa = newSearch(browser, query)
 
         initialSet = {}
         cnt= 0
@@ -331,7 +334,7 @@ if __name__ == "__main__":
 
         crawlQuestions(start_paa, paa_list, initialSet,depth)
         treeData = 'var treeData = ' + json.dumps(paa_list) + ';'
-        
+
         if paa_list[0]['children']:
             root = os.path.dirname(os.path.abspath(__file__))
             templates_dir = os.path.join(root, 'templates')
@@ -343,9 +346,9 @@ if __name__ == "__main__":
                     treeData = treeData,
                 ))
 
-    if args['--csv']:
-        if paa_list[0]['children']:
-            _path = 'csv/'+prettyOutputName('csv')
-            flatten_csv(paa_list, depth, _path)
+        if args['--csv']:
+            if paa_list[0]['children']:
+                _path = 'csv/'+prettyOutputName('csv')
+                flatten_csv(paa_list, depth, _path)
 
-    browser.close()
+        browser.close()
